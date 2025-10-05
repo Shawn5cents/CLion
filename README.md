@@ -1,6 +1,6 @@
 # CLion (Command Line Lion)
 
-A high-performance, native C++ CLI tool that acts as an autonomous pair programmer for C++ projects. By combining native C++ performance with AI-powered code assistance, CLion revolutionizes how developers interact with their codebase.
+CLion (Command Line Lion) is a high-performance, native C++ CLI tool that acts as an autonomous pair programmer for all agentic coding, focusing on robust context-handling and compiler-feedback loops, with support for OpenRouter and Requesty AI.
 
 ## Features
 

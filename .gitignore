@@ -51,3 +51,12 @@ logs/
 Thumbs.db
 *.bak
 *.backup
+*.ENV
+_deps/
+*.o
+*.a
+*.so
+*.dylib
+*.dll
+*.gch
+*.pch

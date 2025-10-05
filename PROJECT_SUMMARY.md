@@ -1,261 +1,221 @@
-# CLion (Command Line Lion) - Project Summary
+# CLion Project Summary
 
-## Executive Overview
+## Project Overview
+CLion (Command Line Lion) is a high-performance, native C++ CLI tool that acts as an autonomous pair programmer for all agentic coding, focusing on robust context-handling and compiler-feedback loops, with support for OpenRouter and Requesty AI.
 
-CLion is an innovative, high-performance C++ CLI tool that acts as an autonomous pair programmer for C++ projects. By combining native C++ performance with AI-powered code assistance, CLion aims to revolutionize how developers interact with their codebase, offering intelligent code reviews, automated error fixing, and context-aware suggestions.
+## Core Technology
+- **Language**: C++20 for native speed and efficiency
+- **Build System**: CMake for multi-platform building
+- **Architecture**: Modular design with separate components for CLI, LLM, indexing, and compilation
 
-## Key Differentiators
+## Key Features
 
-1. **Native C++ Performance**: Built entirely in C++20 for maximum speed and efficiency
-2. **Intelligent Code Indexing**: Fast, native C++ metadata extraction for optimized context
-3. **Compiler Feedback Loop**: Automatic fixing of compilation errors using AI
-4. **Transparent Operations**: Full visibility into token usage, costs, and reasoning
-5. **Project-Aware**: Understands project structure and respects coding conventions
+### 1. Generic LLM Integration
+- Support for multiple LLM providers (OpenRouter, Requesty AI, etc.)
+- Provider-specific API key authentication
+- Flexible JSON payload construction and response parsing
 
-## Project Vision
+### 2. Intelligent Context Handling
+- File inclusion with @file <path> syntax
+- Native C++ code indexing for optimized context selection
+- Real-time token counting and cost estimation
 
-To create an open-source AI assistant that feels like a natural extension of the C++ developer's toolkit, enhancing productivity while maintaining full control and transparency over code changes.
+### 3. Compiler Feedback Loop
+- Automatic error detection and fixing
+- Support for GCC/Clang error parsing
+- Iterative build and fix workflow
 
-## Technical Architecture
+### 4. User Experience
+- Interactive approval loop for code changes
+- Structured rules engine (.clionrules)
+- Transparency features with explain mode
 
-### Core Components
+## Project Structure
 
-1. **CLI Interface**: Modern command-line interface using CLI11
-2. **LLM Client**: HTTP client for Gemini API integration
-3. **Code Indexer**: Native C++ metadata extraction and indexing
-4. **Compiler Interface**: Command execution and error parsing
-5. **Session Manager**: Conversation persistence with Firestore
-6. **Rules Engine**: Configurable project-specific conventions
-
-### Technology Stack
-
-- **Language**: C++20
-- **Build System**: CMake
-- **CLI Framework**: CLI11
-- **HTTP Client**: CURL
-- **JSON Parsing**: nlohmann/json
-- **Configuration**: YAML-CPP
-- **Database**: Firestore C++ SDK
-- **Testing**: Google Test/Mock
-
-## User Experience
-
-### Primary Commands
-
-1. **Code Review**: `clion review --file <path>`
-   - Analyzes code and suggests improvements
-   - Provides diff-format changes
-   - Interactive approval process
-
-2. **Error Fixing**: `clion fix-error <command>`
-   - Executes build command
-   - Parses compilation errors
-   - Automatically applies fixes
-
-3. **Explain Mode**: `clion --explain <command>`
-   - Shows detailed reasoning
-   - Displays token usage and costs
-   - Provides full transparency
-
-### Workflow Examples
-
-#### Code Review Workflow
-```bash
-# Review a single file
-clion review --file src/main.cpp
-
-# Review with project context
-clion review --file src/main.cpp --explain
-
-# Review with custom rules
-clion review --file src/main.cpp --rules .clionrules.yaml
 ```
-
-#### Error Fixing Workflow
-```bash
-# Fix build errors
-clion fix-error "cmake --build ."
-
-# Fix with specific compiler
-clion fix-error "make CXX=g++-11"
-
-# Fix with custom rules
-clion fix-error "make" --rules .clionrules.yaml
+CLion/
+├── CMakeLists.txt          # Main build configuration
+├── Makefile                # Alternative build system for testing
+├── README.md               # Project documentation
+├── .gitignore              # Git ignore patterns
+├── include/
+│   └── clion/
+│       └── common.h        # Shared types and utilities
+├── src/
+│   ├── main.cpp            # Application entry point
+│   ├── cli/
+│   │   ├── cli_parser.h    # CLI argument parsing
+│   │   ├── cli_parser.cpp
+│   │   ├── interaction.h   # User interaction utilities
+│   │   └── interaction.cpp
+│   ├── llm/
+│   │   ├── llm_client.h    # LLM API client
+│   │   ├── llm_client.cpp
+│   │   ├── context_builder.h # Context management
+│   │   ├── context_builder.cpp
+│   │   ├── session.h       # Conversation memory
+│   │   └── session.cpp
+│   ├── indexer/
+│   │   ├── project_scanner.h # Project scanning utilities
+│   │   ├── project_scanner.cpp
+│   │   ├── code_index.h    # Code indexing functionality
+│   │   ├── code_index.cpp
+│   │   ├── prompt_analyzer.h # Intelligent context selection
+│   │   └── prompt_analyzer.cpp
+│   ├── compiler/
+│   │   ├── command_executor.h # Build command execution
+│   │   ├── command_executor.cpp
+│   │   ├── error_parser.h  # Compiler error parsing
+│   │   └── error_parser.cpp
+│   └── utils/
+│       ├── file_utils.h    # File I/O utilities
+│       ├── file_utils.cpp
+│       ├── diff_utils.h    # Diff generation and parsing
+│       ├── diff_utils.cpp
+│       ├── token_counter.h # Token counting and cost estimation
+│       ├── token_counter.cpp
+│       ├── rules_loader.h  # Configuration file handling
+│       └── rules_loader.cpp
+└── tests/
+    ├── CMakeLists.txt      # Test configuration
+    ├── unit/               # Unit tests
+    └── integration/        # Integration tests
 ```
 
 ## Development Phases
 
-### Phase 1: Foundation (10 days)
-- Project setup and build system
-- Basic CLI with argument parsing
-- HTTP client for API communication
-- File I/O and diff utilities
+### Phase 1: Foundation and Core CLI Structure (The Skeleton)
+**Goal**: Establish a robust C++ executable with clear command-line parsing and basic user interaction.
 
-### Phase 2: LLM Integration (14 days)
-- Gemini API integration
-- Context building with file inclusions
-- Session persistence
-- Token counting and cost estimation
+#### Phase 1.1: Project Setup ✅
+- Initialize the C++ project structure and configure CMake for multi-platform building
+- Create modular project directory structure
+- Generate CMakeLists.txt with C++20 standard support
+- Create initial main.cpp with basic entry point
 
-### Phase 3: Code Indexing (11 days)
-- Project scanning with .gitignore support
-- C++ metadata extraction
-- Intelligent context selection
+#### Phase 1.2: Argument Parsing ✅
+- Implement command-line argument handling for main command and flags
+- Integrate CLI11 library
+- Define main 'clion' command with 'review' and 'fix-error' subcommands
+- Add --file <path> option to review subcommand
 
-### Phase 4: Compiler Loop (11 days)
-- Command execution with output capture
-- Error parsing for multiple compilers
-- Iterative fix workflow
+#### Phase 1.3: HTTP Client 🔄
+- Implement LLMClient class for secure HTTPS POST requests
+- Handle provider-specific API key authentication
+- Integrate CURL library
+- Create send_request method stub
 
-### Phase 5: Polish (15 days)
-- Interactive approval system
-- Rules engine with YAML configuration
-- Transparency features
-- Testing and documentation
+#### Phase 1.4: Basic I/O & Diff ⏳
+- Implement file reading utilities
+- Display generated code patches using unified diff format
 
-## Configuration System
+### Phase 2: LLM Communication and Context Handling (The Voice)
+**Goal**: Enable communication with diverse LLMs and effective project context gathering.
 
-### .clionrules.yaml Structure
-```yaml
-# Project-specific configuration
-project:
-  name: "My C++ Project"
+#### Phase 2.1: Generic API Integration ⏳
+- Complete LLMClient for diverse JSON payloads
+- Process structured JSON responses from different vendors
+- Integrate nlohmann/json library
 
-# API settings
-api:
-  provider: "gemini"
-  model: "gemini-pro"
-  max_tokens: 8192
+#### Phase 2.2: Context Injection ⏳
+- Implement file reader with @file <path> syntax
+- Create context builder for prompt management
 
-# Coding rules
-rules:
-  - name: "naming_conventions"
-    instruction: "Use snake_case for functions"
-    priority: "high"
+#### Phase 2.3: Conversation Memory ⏳
+- Implement history manager for conversation persistence
+- Define session structures
+- Integrate Firestore DB for persistent storage
 
-# Indexer settings
-indexer:
-  include_patterns: ["*.cpp", "*.h", "*.hpp"]
-  exclude_patterns: ["build/*"]
-  respect_gitignore: true
-```
+#### Phase 2.4: Transparency Feature 1 ⏳
+- Implement real-time token counter
+- Display token usage and cost before API requests
 
-## Security Considerations
+### Phase 3: Differentiating Feature: Native C++ Indexing (The Brain)
+**Goal**: Implement high-performance context feature that sets CLion apart.
 
-1. **API Key Management**: Secure storage and transmission
-2. **Code Privacy**: User consent before sending code
-3. **Input Validation**: Comprehensive validation of all inputs
-4. **Sandboxing**: Isolated execution of build commands
-5. **Audit Trail**: Complete logging of all operations
+#### Phase 3.1: Project Scanner Utility ⏳
+- Create fast recursive project directory scanner
+- Respect .gitignore patterns
+- Identify all C++ source and header files
 
-## Performance Targets
+#### Phase 3.2: Native Code Indexer ⏳
+- Extract C++ metadata: function signatures, class names, variables
+- Store in optimized in-memory structure
+- Implement regex-based parsing
 
-- **Startup Time**: <500ms for small projects
-- **Indexing Speed**: <100ms per 100 files
-- **API Response**: <5 seconds for typical requests
-- **Memory Usage**: <100MB for medium projects
-- **Token Optimization**: >50% reduction through indexing
+#### Phase 3.3: Intelligent Context Selection ⏳
+- Check user request against code index
+- Send only index data initially, with user confirmation for full files
+- Create prompt analyzer for context optimization
 
-## Success Metrics
+### Phase 4: Differentiating Feature: Compiler Feedback Loop (The Tamer)
+**Goal**: Enable automatic code fixing based on actual compiler errors.
 
-### Technical Metrics
-- Code coverage >80%
-- Zero critical security vulnerabilities
-- Support for GCC, Clang, and MSVC
-- Cross-platform compatibility (Linux, macOS, Windows)
+#### Phase 4.1: Command Execution Tool ⏳
+- Implement shell command execution
+- Capture stdout and stderr
+- Support build commands (cmake, make)
 
-### User Metrics
-- Task completion rate >95%
-- Error fix success rate >80%
-- User satisfaction >4/5
-- Adoption through community engagement
+#### Phase 4.2: Error Parsing Filter ⏳
+- Parse compiler error output with regex
+- Extract filename, line number, and error message
+- Support GCC/Clang error formats
 
-## Open Source Strategy
+#### Phase 4.3: Iterative Fix Workflow ⏳
+- Create clion fix-error command
+- Inject error details into LLM prompt
+- Retry build until success
 
-### License
-- MIT License for maximum compatibility
-- Clear contribution guidelines
-- Code of conduct for community
+### Phase 5: User Experience and Final Polish (The Polish)
+**Goal**: Ensure smooth, secure, and transparent user experience.
 
-### Community Building
-- Comprehensive documentation
-- Tutorial videos and examples
-- Responsive issue handling
-- Regular releases and updates
+#### Phase 5.1: Interactive Approval Loop ⏳
+- Implement secure approval process for code changes
+- Provide [A]pply / [S]kip / [E]dit Prompt options
+- Apply changes only on user approval
 
-### Extension Points
-- Plugin system for custom features
-- Support for additional LLM providers
-- Language extensions beyond C++
-- IDE integration plugins
+#### Phase 5.2: Structured Rules Engine (.clionrules) ⏳
+- Define YAML schema for project configuration
+- Store coding conventions as high-priority instructions
+- Integrate YAML-CPP library
 
-## Competitive Analysis
+#### Phase 5.3: Final Transparency Feature ⏳
+- Implement "Explain Plan Mode" with --explain flag
+- Display full reasoning chain and raw prompts
+- Show estimated costs
 
-### Advantages over Existing Tools
-1. **Native Performance**: Faster than Python/Node.js based tools
-2. **C++ Specialization**: Tailored specifically for C++ development
-3. **Compiler Integration**: Unique automated error fixing
-4. **Transparent Operation**: Full visibility into AI reasoning
-5. **Offline Capability**: Local indexing and caching
+## Key Differentiators
 
-### Positioning
-- Complementary to existing IDEs and editors
-- Focused on command-line workflow
-- Emphasis on automation and efficiency
-- Bridge between AI assistance and traditional tools
+1. **Native C++ Performance**: High-speed execution and low memory footprint
+2. **Generic API Support**: Works with multiple LLM providers
+3. **Intelligent Context Selection**: Reduces token usage and improves response quality
+4. **Compiler Feedback Loop**: Automatic error fixing based on actual compiler output
+5. **Transparency Features**: Full visibility into the agent's reasoning process
 
-## Future Roadmap
+## Current Status
 
-### Short-term (6 months)
-- Complete core functionality
-- Build initial user community
-- Refine based on feedback
-- Add support for more compilers
+- **Phase 1.1**: Completed ✅
+- **Phase 1.2**: Completed ✅
+- **Phase 1.3**: In Progress 🔄
+- **Phase 1.4**: Completed ✅
+- **Phase 2.1**: Completed ✅
+- **Phase 2.2**: Pending ⏳
+- **Phase 3**: Pending ⏳
+- **Phase 4**: Pending ⏳
+- **Phase 5**: Pending ⏳
 
-### Medium-term (1 year)
-- Multi-language support
-- Advanced refactoring capabilities
-- Team collaboration features
-- IDE integrations
+## Repository
 
-### Long-term (2+ years)
-- Plugin ecosystem
-- Cloud-based features
-- Enterprise support
-- AI model customization
+The project is hosted at: https://github.com/Shawn5cents/CLion
 
-## Risks and Mitigation
+## Timeline Estimation
 
-### Technical Risks
-- **Dependency Complexity**: Use package managers and containers
-- **API Limitations**: Implement local caching and fallbacks
-- **Performance Issues**: Profile early and optimize bottlenecks
-- **Platform Support**: Continuous integration across platforms
+**Estimated Total Completion Time**: 40-50 days (8-10 weeks)
 
-### Project Risks
-- **Scope Creep**: Strict MVP focus initially
-- **User Adoption**: Extensive documentation and examples
-- **Security Concerns**: Regular audits and best practices
-- **Maintainability**: Clean architecture and testing
+## Resources Required
 
-## Resource Requirements
-
-### Development Team
-- 2-3 C++ developers
-- 1 DevOps/CI specialist
-- 1 technical writer
-- 1 community manager
-
-### Infrastructure
-- CI/CD pipeline (GitHub Actions)
-- Documentation hosting
-- Package distribution
-- Analytics and monitoring
-
-## Conclusion
-
-CLion represents an ambitious but achievable project that combines cutting-edge AI technology with native C++ performance. By focusing on developer productivity, transparency, and extensibility, CLion has the potential to become an essential tool in the C++ developer's toolkit.
-
-The phased approach ensures manageable development cycles while delivering value at each stage. The open-source nature and community focus will help drive adoption and continuous improvement.
-
-With careful execution of the roadmap and attention to user feedback, CLion can establish itself as a leading AI-powered development tool for the C++ ecosystem.
+1. **Development Environment**: C++20 compatible compiler, CMake, Git
+2. **External Libraries**: CLI11, CURL, nlohmann/json, YAML-CPP
+3. **Testing Framework**: Google Test (for unit tests)
+4. **Documentation**: Markdown processor (for documentation generation)
+5. **Cloud Services**: Firestore DB (for persistent session storage)

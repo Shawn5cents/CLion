@@ -23,7 +23,7 @@ struct ClassInfo {
 };
 
 struct FileInfo {
-    path path;
+    path file_path;
     std::vector<std::string> includes;
     std::vector<FunctionInfo> functions;
     std::vector<ClassInfo> classes;

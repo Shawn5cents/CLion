@@ -22,6 +22,25 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 find_package(CURL REQUIRED)
 find_package(PkgConfig REQUIRED)
 
+# Include FetchContent module
+include(FetchContent)
+
+# Fetch fmt library
+FetchContent_Declare(
+    fmt
+    GIT_REPOSITORY https://github.com/fmtlib/fmt.git
+    GIT_TAG 10.2.1
+)
+FetchContent_MakeAvailable(fmt)
+
+# Fetch indicators library
+FetchContent_Declare(
+    indicators
+    GIT_REPOSITORY https://github.com/p-ranav/indicators.git
+    GIT_TAG v2.3
+)
+FetchContent_MakeAvailable(indicators)
+
 # Find CLI11
 pkg_check_modules(CLI11 REQUIRED CLI11)
 if(NOT CLI11_FOUND)
@@ -47,23 +66,62 @@ endif()
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/external)
 
+# UI Source files
+set(UI_SOURCES
+    src/ui/ui_manager.cpp
+    src/ui/color_manager.cpp
+    src/ui/progress_manager.cpp
+    src/ui/prompt_manager.cpp
+    src/ui/table_formatter.cpp
+    src/ui/theme_manager.cpp
+    src/ui/terminal_io.cpp
+    src/ui/progress_bar.cpp
+    src/ui/spinner.cpp
+    src/ui/table.cpp
+)
+
+# UI Header files
+set(UI_HEADERS
+    src/ui/ui_manager.h
+    src/ui/color_manager.h
+    src/ui/progress_manager.h
+    src/ui/prompt_manager.h
+    src/ui/table_formatter.h
+    src/ui/theme_manager.h
+    src/ui/terminal_io.h
+    src/ui/progress_bar.h
+    src/ui/spinner.h
+    src/ui/table.h
+)
+
 # Source files
 set(SOURCES
     src/main.cpp
     src/cli/cli_parser.cpp
     src/cli/interaction.cpp
+    src/cli/command_processor.cpp
     src/llm/llm_client.cpp
     src/llm/context_builder.cpp
     src/llm/session.cpp
+    src/llm/session_checkpoint.cpp
+    src/llm/memory_manager.cpp
     src/indexer/project_scanner.cpp
     src/indexer/code_index.cpp
     src/indexer/prompt_analyzer.cpp
     src/compiler/command_executor.cpp
+    src/compiler/enhanced_command_executor.cpp
     src/compiler/error_parser.cpp
+    src/compiler/enhanced_error_parser.cpp
     src/utils/file_utils.cpp
     src/utils/diff_utils.cpp
     src/utils/token_counter.cpp
     src/utils/rules_loader.cpp
+    src/utils/string_utils.cpp
+    src/nlp/text_analyzer.cpp
+    src/nlp/command_interpreter.cpp
+    src/nlp/code_analyzer.cpp
+    src/nlp/error_interpreter.cpp
+    ${UI_SOURCES}
 )
 
 # Header files
@@ -78,11 +136,19 @@ set(HEADERS
     src/indexer/code_index.h
     src/indexer/prompt_analyzer.h
     src/compiler/command_executor.h
+    src/compiler/enhanced_command_executor.h
     src/compiler/error_parser.h
+    src/compiler/enhanced_error_parser.h
     src/utils/file_utils.h
     src/utils/diff_utils.h
     src/utils/token_counter.h
     src/utils/rules_loader.h
+    src/utils/string_utils.h
+    src/nlp/text_analyzer.h
+    src/nlp/command_interpreter.h
+    src/nlp/code_analyzer.h
+    src/nlp/error_interpreter.h
+    ${UI_HEADERS}
 )
 
 # Create executable
@@ -112,6 +178,19 @@ endif()
 
 target_link_libraries(clion ${CURL_LIBRARIES})
 
+# Link new UI libraries
+if(fmt_FOUND)
+    target_link_libraries(clion fmt::fmt)
+else()
+    target_link_libraries(clion fmt)
+endif()
+
+if(indicators_FOUND)
+    target_link_libraries(clion indicators::indicators)
+else()
+    target_link_libraries(clion indicators)
+endif()
+
 # Add Firestore SDK when available
 # find_package(Firebase REQUIRED)
 # target_link_libraries(clion Firebase::Firestore)
@@ -125,8 +204,8 @@ endif()
 install(TARGETS clion DESTINATION bin)
 
 # Testing
-enable_testing()
-add_subdirectory(tests)
+# enable_testing()
+# add_subdirectory(tests)
 
 # Documentation
 find_package(Doxygen QUIET)

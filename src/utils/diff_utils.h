@@ -28,6 +28,10 @@ public:
     static std::vector<DiffHunk> parseDiff(const std::string& diff);
     static std::string applyDiff(const std::string& original, const std::vector<DiffHunk>& hunks);
     static void displayDiff(const std::string& diff);
+
+private:
+    // Helper to split text into lines
+    static std::vector<std::string> splitIntoLines(const std::string& text);
 };
 
 } // namespace utils

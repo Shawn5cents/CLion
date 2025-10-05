@@ -1,265 +1,167 @@
 # CLion Development Roadmap
 
-This roadmap provides a timeline and dependency graph for implementing the CLion C++ Agentic CLI Tool.
+## Project Overview
+CLion (Command Line Lion) is a high-performance, native C++ CLI tool that acts as an autonomous pair programmer for all agentic coding, focusing on robust context-handling and compiler-feedback loops, with support for OpenRouter and Requesty AI.
 
-## Project Timeline Overview
-
-```mermaid
-gantt
-    title CLion Development Timeline
-    dateFormat  YYYY-MM-DD
-    section Phase 1: Foundation
-    Project Setup           :p1-1, 2024-01-01, 2d
-    CLI Argument Parsing    :p1-2, after p1-1, 3d
-    HTTP Client             :p1-3, after p1-2, 3d
-    I/O & Diff Utilities    :p1-4, after p1-3, 2d
-    
-    section Phase 2: LLM Integration
-    Gemini API Integration  :p2-1, after p1-4, 4d
-    Context Injection       :p2-2, after p2-1, 3d
-    Conversation Memory     :p2-3, after p2-2, 5d
-    Token Counter           :p2-4, after p2-3, 2d
-    
-    section Phase 3: Code Indexing
-    Project Scanner         :p3-1, after p2-4, 3d
-    Native Code Indexer     :p3-2, after p3-1, 5d
-    Context Selection       :p3-3, after p3-2, 3d
-    
-    section Phase 4: Compiler Loop
-    Command Executor        :p4-1, after p3-3, 3d
-    Error Parser            :p4-2, after p4-1, 4d
-    Fix Workflow            :p4-3, after p4-2, 4d
-    
-    section Phase 5: Polish
-    Approval Loop           :p5-1, after p4-3, 3d
-    Rules Engine            :p5-2, after p5-1, 4d
-    Transparency Features   :p5-3, after p5-2, 3d
-    Testing & Documentation :p5-4, after p5-3, 5d
-```
-
-## Phase-by-Phase Breakdown
-
-### Phase 1: Foundation and Core CLI Structure (10 days)
-
+## Phase 1: Foundation and Core CLI Structure (The Skeleton)
 **Goal**: Establish a robust C++ executable with clear command-line parsing and basic user interaction.
 
-| Task | Duration | Dependencies | Risk Level |
-|------|----------|--------------|------------|
-| 1.1 Project Setup | 2 days | None | Low |
-| 1.2 Argument Parsing | 3 days | 1.1 | Low |
-| 1.3 HTTP Client | 3 days | 1.2 | Medium |
-| 1.4 I/O & Diff Utilities | 2 days | 1.3 | Low |
+### Phase 1.1: Project Setup ✅
+- Initialize the C++ project structure and configure CMake for multi-platform building
+- Create modular project directory structure (src/cli, src/llm, src/indexer, src/compiler, src/utils, include, tests)
+- Generate CMakeLists.txt with C++20 standard and modular structure
+- Create initial main.cpp with basic entry point
 
-**Key Deliverables**:
-- Working CMake build system
-- Basic CLI with `review` command
-- HTTP client capable of making requests
-- File reading and diff generation utilities
+### Phase 1.2: Argument Parsing ✅
+- Implement command-line argument handling to support the main command and necessary flags (clion review --file <path>)
+- Integrate CLI11 library in CMakeLists.txt
+- Implement basic CLI structure in src/cli/cli_parser.cpp/h
+- Define main 'clion' command and 'review' subcommand
+- Add --file <path> option to review subcommand
 
-**Potential Challenges**:
-- Setting up all dependencies (CURL, CLI11, etc.) across platforms
-- Implementing robust error handling for network operations
+### Phase 1.3: HTTP Client 🔄
+- Implement a LLMClient class for making secure HTTPS POST requests to generic LLM API endpoints (like OpenRouter/Requesty AI)
+- Must handle provider-specific API key authentication
+- Integrate CURL library in CMakeLists.txt
+- Create LLMClient class in src/llm/llm_client.cpp/h
+- Implement basic CURL setup and initialization
+- Create send_request method stub
 
-### Phase 2: LLM Communication and Context Handling (14 days)
+### Phase 1.4: Basic I/O & Diff ⏳
+- Implement utility functions to read file content and display the generated code patch using a standard unified diff format
+- Implement read_file utility in src/utils/file_utils.cpp/h
+- Implement generate_diff utility in src/utils/diff_utils.cpp/h
 
-**Goal**: Enable the tool to communicate with the LLM and effectively gather project context.
+## Phase 2: LLM Communication and Context Handling (The Voice)
+**Goal**: Enable the tool to communicate with diverse LLMs and effectively gather project context.
 
-| Task | Duration | Dependencies | Risk Level |
-|------|----------|--------------|------------|
-| 2.1 Gemini API Integration | 4 days | 1.4 | High |
-| 2.2 Context Injection | 3 days | 2.1 | Medium |
-| 2.3 Conversation Memory | 5 days | 2.2 | High |
-| 2.4 Token Counter | 2 days | 2.3 | Low |
+### Phase 2.1: Generic API Integration ⏳
+- Complete the LLMClient class to construct diverse JSON payloads (supporting OpenRouter, Requesty AI, etc.)
+- Process the structured JSON response, handling different vendor response formats
+- Integrate nlohmann/json library
+- Complete LLMClient::send_request with generic API payload
+- Implement JSON response parsing
 
-**Key Deliverables**:
-- Full Gemini API integration with JSON handling
-- Context builder with file inclusion support
-- Session persistence with Firestore
-- Real-time token usage display
+### Phase 2.2: Context Injection ⏳
+- Implement a file reader function that uses the @file <path> syntax (or similar) to pull file contents and inject them into the main prompt
+- Implement file inclusion detection (@file syntax)
+- Create context builder in src/llm/context_builder.cpp/h
 
-**Potential Challenges**:
-- Firestore C++ SDK integration complexity
-- Handling API rate limits and authentication
-- Efficient context management for large projects
+### Phase 2.3: Conversation Memory ⏳
+- Implement a history manager that saves and re-loads the conversation history (prompts and LLM responses) for the current session
+- Define session structures in src/llm/session.cpp/h
+- Implement local JSON serialization (temporary)
+- Integrate Firestore DB (for persistent session storage)
+- Implement persistent session storage
 
-### Phase 3: Native C++ Indexing (11 days)
+### Phase 2.4: Transparency Feature 1 ⏳
+- Implement a Real-Time Token Counter that calculates and displays the token usage of the current prompt before sending the request
+- Implement token calculation utility in src/utils/token_counter.cpp/h
+- Display token usage and cost before API requests
 
+## Phase 3: Differentiating Feature: Native C++ Indexing (The Brain)
 **Goal**: Implement the high-performance context feature that sets CLion apart.
 
-| Task | Duration | Dependencies | Risk Level |
-|------|----------|--------------|------------|
-| 3.1 Project Scanner | 3 days | 2.4 | Medium |
-| 3.2 Native Code Indexer | 5 days | 3.1 | High |
-| 3.3 Context Selection | 3 days | 3.2 | Medium |
+### Phase 3.1: Project Scanner Utility ⏳
+- Create a fast, recursive function to scan the entire project directory (respecting .gitignore)
+- Identify all .cpp, .h, .hpp, and project files
+- Create project scanner in src/indexer/project_scanner.cpp/h
+- Implement .gitignore parsing
 
-**Key Deliverables**:
-- Fast project scanner with .gitignore support
-- C++ metadata extraction and indexing
-- Intelligent context selection with user confirmation
+### Phase 3.2: Native Code Indexer ⏳
+- Develop a component that reads C++ header files and extracts key metadata: function signatures, class names, and variable definitions
+- Store this data in an optimized in-memory structure (e.g., std::map<string, string>)
+- Define CodeIndex structure in src/indexer/code_index.cpp/h
+- Implement C++ metadata extraction with regex
+- Implement generate_index function
 
-**Potential Challenges**:
-- Complex regex patterns for C++ parsing
-- Performance optimization for large codebases
-- Handling various C++ dialects and edge cases
+### Phase 3.3: Intelligent Context Selection ⏳
+- Modify the prompt builder to first check the user's request against the index
+- Instead of sending the full file, send only the index data and ask the user to confirm if the full file is necessary
+- Create prompt analyzer in src/indexer/prompt_analyzer.cpp/h
+- Implement user confirmation for full file inclusion
 
-### Phase 4: Compiler Feedback Loop (11 days)
+## Phase 4: Differentiating Feature: Compiler Feedback Loop (The Tamer)
+**Goal**: Enable the agent to automatically fix code based on actual compiler errors—a massive win for C++ developers.
 
-**Goal**: Enable the agent to automatically fix code based on actual compiler errors.
+### Phase 4.1: Command Execution Tool ⏳
+- Implement a C++ function that can execute arbitrary shell commands (e.g., cmake --build . or make)
+- Capture the standard output and standard error (stderr)
+- Create command executor in src/compiler/command_executor.cpp/h
+- Implement stdout/stderr capture
 
-| Task | Duration | Dependencies | Risk Level |
-|------|----------|--------------|------------|
-| 4.1 Command Executor | 3 days | 3.3 | Medium |
-| 4.2 Error Parser | 4 days | 4.1 | High |
-| 4.3 Fix Workflow | 4 days | 4.2 | High |
+### Phase 4.2: Error Parsing Filter ⏳
+- Develop a regular expression or state machine to specifically parse the captured stderr output from common C++ compilers (GCC/Clang) and linters
+- Extract the filename, line number, and error message
+- Create error parser in src/compiler/error_parser.cpp/h
+- Implement GCC/Clang error regex patterns
+- Define error structure objects
 
-**Key Deliverables**:
-- Command execution with output capture
-- Multi-compiler error parsing
-- Iterative fix workflow with retry logic
+### Phase 4.3: Iterative Fix Workflow ⏳
+- Create a clion fix-error command
+- When run, it automatically injects the extracted error details, the problematic code snippet, and the original error message into the LLM prompt
+- Ask for a targeted fix and retrying the build command until success
+- Implement fix-error command in CLI
+- Create iterative fix workflow logic
 
-**Potential Challenges**:
-- Platform-specific command execution
-- Parsing various compiler error formats
-- Handling circular fix dependencies
-
-### Phase 5: User Experience and Final Polish (15 days)
-
+## Phase 5: User Experience and Final Polish (The Polish)
 **Goal**: Ensure a smooth, secure, and transparent user experience.
 
-| Task | Duration | Dependencies | Risk Level |
-|------|----------|--------------|------------|
-| 5.1 Approval Loop | 3 days | 4.3 | Low |
-| 5.2 Rules Engine | 4 days | 5.1 | Medium |
-| 5.3 Transparency Features | 3 days | 5.2 | Low |
-| 5.4 Testing & Documentation | 5 days | 5.3 | Low |
+### Phase 5.1: Interactive Approval Loop ⏳
+- Implement a secure loop: 1. LLM proposes changes (diff format). 2. User is prompted [A]pply / [S]kip / [E]dit Prompt?. 3. Only apply file changes on [A]pproval
+- Implement approval prompt in src/cli/interaction.cpp/h
+- Create diff application utility
 
-**Key Deliverables**:
-- Interactive approval system for changes
-- Configurable rules engine with YAML support
-- Explain mode with detailed reasoning
-- Comprehensive test suite and documentation
+### Phase 5.2: Structured Rules Engine (.clionrules) ⏳
+- Define the YAML schema for a project configuration file (.clionrules) that holds project-specific coding conventions
+- The agent should use this as a high-priority system instruction
+- Integrate YAML-CPP library
+- Define .clionrules.yaml schema
+- Implement rules loader in src/utils/rules_loader.cpp/h
 
-**Potential Challenges**:
-- Designing intuitive user interactions
-- Balancing feature completeness with simplicity
-- Ensuring security for automated code changes
+### Phase 5.3: Final Transparency Feature ⏳
+- Implement the "Explain Plan Mode" (run with --explain flag) that outputs the agent's full reasoning chain
+- Include the exact raw prompt sent to the LLM and the estimated cost
+- Add --explain flag to CLI
+- Implement explain plan mode output
 
-## Dependency Graph
+## Final Phase: Testing and Documentation ⏳
+- Final testing and documentation
 
-```mermaid
-graph TD
-    A[1.1 Project Setup] --> B[1.2 CLI Parsing]
-    B --> C[1.3 HTTP Client]
-    C --> D[1.4 I/O & Diff]
-    
-    D --> E[2.1 Gemini API]
-    E --> F[2.2 Context Injection]
-    F --> G[2.3 Session Memory]
-    G --> H[2.4 Token Counter]
-    
-    H --> I[3.1 Project Scanner]
-    I --> J[3.2 Code Indexer]
-    J --> K[3.3 Context Selection]
-    
-    K --> L[4.1 Command Executor]
-    L --> M[4.2 Error Parser]
-    M --> N[4.3 Fix Workflow]
-    
-    N --> O[5.1 Approval Loop]
-    O --> P[5.2 Rules Engine]
-    P --> Q[5.3 Transparency]
-    Q --> R[5.4 Testing & Docs]
-```
+## Timeline Estimation
 
-## Resource Requirements
+Based on current progress:
+- **Phase 1.3**: 2-3 days
+- **Phase 1.4**: 1-2 days
+- **Phase 2.1**: 3-4 days
+- **Phase 2.2**: 2-3 days
+- **Phase 2.3**: 4-5 days
+- **Phase 2.4**: 1-2 days
+- **Phase 3.1**: 2-3 days
+- **Phase 3.2**: 4-5 days
+- **Phase 3.3**: 3-4 days
+- **Phase 4.1**: 2-3 days
+- **Phase 4.2**: 3-4 days
+- **Phase 4.3**: 4-5 days
+- **Phase 5.1**: 3-4 days
+- **Phase 5.2**: 3-4 days
+- **Phase 5.3**: 1-2 days
+- **Final Phase**: 2-3 days
 
-### Development Environment
-- **Compiler**: GCC 10+ or Clang 10+ with C++20 support
-- **Build System**: CMake 3.16+
-- **Version Control**: Git
-- **IDE**: CLion, VS Code, or similar
+**Estimated Total Completion Time**: 40-50 days (8-10 weeks)
 
-### External Dependencies
-- **CLI11**: Command-line parsing
-- **CURL**: HTTP client
-- **nlohmann/json**: JSON parsing
-- **Firestore C++ SDK**: Session persistence
-- **YAML-CPP**: Configuration parsing
-- **Boost.Regex**: Advanced pattern matching (optional)
+## Key Differentiators
 
-### Testing Framework
-- **Google Test**: Unit testing
-- **Google Mock**: Mocking for testing
-- **Valgrind**: Memory leak detection
-- **AddressSanitizer**: Runtime error detection
+1. **Native C++ Performance**: High-speed execution and low memory footprint
+2. **Generic API Support**: Works with multiple LLM providers (OpenRouter, Requesty AI, etc.)
+3. **Intelligent Context Selection**: Reduces token usage and improves response quality
+4. **Compiler Feedback Loop**: Automatic error fixing based on actual compiler output
+5. **Transparency Features**: Full visibility into the agent's reasoning process
 
-## Milestones and Validation
+## Resources Required
 
-### Milestone 1: Basic CLI (After Phase 1)
-**Validation Criteria**:
-- Can build and run `clion review --file <path>`
-- HTTP client can make successful requests
-- Diff generation works correctly
-
-### Milestone 2: LLM Integration (After Phase 2)
-**Validation Criteria**:
-- Can send requests to Gemini API and receive responses
-- File inclusion (@file syntax) works
-- Session persistence across runs
-
-### Milestone 3: Smart Indexing (After Phase 3)
-**Validation Criteria**:
-- Can index a medium-sized C++ project (<1000 files) in <5 seconds
-- Context selection reduces token usage by >50%
-- User confirmation flow works correctly
-
-### Milestone 4: Auto-Fix (After Phase 4)
-**Validation Criteria**:
-- Can fix common compilation errors automatically
-- Supports at least GCC and Clang
-- Iterative workflow converges in <3 attempts
-
-### Milestone 5: Production Ready (After Phase 5)
-**Validation Criteria**:
-- All features work end-to-end
-- Comprehensive test coverage (>80%)
-- Documentation is complete
-- Security review passed
-
-## Risk Mitigation Strategies
-
-### Technical Risks
-1. **Dependency Management**: Use vcpkg or Conan for consistent dependency management
-2. **Platform Compatibility**: Set up CI/CD with multiple OS targets
-3. **Performance**: Profile early and optimize bottlenecks
-4. **API Limitations**: Implement local caching and fallback strategies
-
-### Project Risks
-1. **Scope Creep**: Strictly adhere to defined MVP features
-2. **Timeline Delays**: Build buffer time into estimates
-3. **Quality Issues**: Implement code reviews and testing standards
-4. **Security Concerns**: Regular security audits and input validation
-
-## Success Metrics
-
-### Performance Metrics
-- **Startup Time**: <500ms for small projects
-- **Indexing Speed**: <100ms per 100 files
-- **API Response Time**: <5 seconds for typical requests
-- **Memory Usage**: <100MB for medium projects
-
-### User Experience Metrics
-- **Task Completion Rate**: >95% for common use cases
-- **Error Fix Success Rate**: >80% for common compilation errors
-- **User Satisfaction**: Target >4/5 in user feedback
-- **Adoption Rate**: Measure through downloads and usage analytics
-
-## Next Steps
-
-1. **Environment Setup**: Prepare development environment with all dependencies
-2. **Repository Creation**: Set up Git repository with proper structure
-3. **CI/CD Pipeline**: Configure automated testing and builds
-4. **Begin Phase 1**: Start with project setup and basic CLI structure
-5. **Regular Reviews**: Schedule weekly progress reviews and adjustments
-
-This roadmap provides a clear path forward for developing CLion, with realistic timelines and contingency plans for potential challenges.
+1. **Development Environment**: C++20 compatible compiler, CMake, Git
+2. **External Libraries**: CLI11, CURL, nlohmann/json, YAML-CPP
+3. **Testing Framework**: Google Test (for unit tests)
+4. **Documentation**: Markdown processor (for documentation generation)
+5. **Cloud Services**: Firestore DB (for persistent session storage)
